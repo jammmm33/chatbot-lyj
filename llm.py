@@ -6,10 +6,13 @@ from langchain.chains import (create_history_aware_retriever,
 from langchain.chains.combine_documents import create_stuff_documents_chain
 from langchain_community.chat_message_histories import ChatMessageHistory
 from langchain_core.chat_history import BaseChatMessageHistory
-from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
+from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder, FewShotPromptTemplate, PromptTemplate
 from langchain_core.runnables.history import RunnableWithMessageHistory
 from langchain_openai import ChatOpenAI, OpenAIEmbeddings
 from langchain_pinecone import PineconeVectorStore
+
+from config import answer_examples 
+
 
 # 환경 변수 로딩
 load_dotenv()
@@ -67,6 +70,19 @@ def get_history_retriever(llm, retriever):
     return history_aware_retriever
 
 
+def few_shot_examples() -> str:
+    example_prompt = PromptTemplate.from_template("Question: {input}\n\nAnswer: {answer}")
+
+    few_shot_prompt = FewShotPromptTemplate(
+        examples=answer_examples,         
+        example_prompt=example_prompt,    
+        prefix='다음 질문에 답변하세요.', 
+        suffix="Question: {input}",       
+        input_variables=["input"],  
+    )
+    return few_shot_prompt.format(input = '{input}')
+
+
 def get_qa_prompt():
     system_prompt = (
          '''
@@ -82,9 +98,12 @@ def get_qa_prompt():
     '''
     )
 
+    formmated_few_shot_prompt = few_shot_examples()
+
     qa_prompt = ChatPromptTemplate.from_messages(
         [
             ("system", system_prompt),
+            ('assistant', formmated_few_shot_prompt),
             MessagesPlaceholder("chat_history"),
             ("human", "{input}"),
         ]
