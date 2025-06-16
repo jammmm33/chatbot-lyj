@@ -1,4 +1,5 @@
 import os
+import json
 
 from dotenv import load_dotenv
 from langchain.chains import (create_history_aware_retriever,
@@ -83,7 +84,22 @@ def few_shot_examples() -> str:
     return few_shot_prompt.format(input = '{input}')
 
 
+def load_dictionary_from_file(path='keyword_dictionary.json'):
+    with open(path, 'r', encoding='utf-8') as file:
+        return json.load(file)
+    
+def build_dictionary_text(dictionary: dict) -> str:
+    return '\n'.join([
+        f'{k} ({", ".join(v["tag"])}): {v["definition"]} [출처: {v["source"]}]'
+        for k, v in dictionary.items()
+    ])
+
+
 def get_qa_prompt():
+    keyword_dictionary = load_dictionary_from_file()
+    dictionary_text = build_dictionary_text(keyword_dictionary)
+
+
     system_prompt = (
          '''
     -당신은 청년수당에 대한 안내문 입니다. 
@@ -95,6 +111,10 @@ def get_qa_prompt():
     
     [context]
     {context} 
+
+    [keyword_dictionary]
+    {dictionary_text}
+
     '''
     )
 
@@ -107,7 +127,8 @@ def get_qa_prompt():
             MessagesPlaceholder("chat_history"),
             ("human", "{input}"),
         ]
-    )
+    ).partial(dictionary_text=dictionary_text)
+    
     return qa_prompt
 
 
