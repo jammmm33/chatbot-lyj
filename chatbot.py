@@ -6,6 +6,30 @@ st.set_page_config(page_title='청년수당 안내문 챗', page_icon='😎')
 st.title('청년수당 안내문 챗봇😎')
 st.markdown("---")
 
+faq_list = [
+    "청년수당",
+    "자기성장기록서",
+    "카드 가능/불가능 사용처"
+]
+st.markdown("### 📌 자주 묻는 질문")
+
+cols = st.columns(len(faq_list))  
+
+for i, q in enumerate(faq_list):
+    with cols[i]:
+        if st.button(q):
+            with st.chat_message("user"):
+                st.write(q)
+            st.session_state.message_list.append({'role': 'user', 'content': q})
+
+            with st.spinner("답변 생성 중..."):
+                ai_message = get_ai_message(q)
+
+            with st.chat_message("ai"):
+                ai_message = st.write_stream(ai_message)
+            st.session_state.message_list.append({'role': 'ai', 'content': ai_message})
+            st.rerun()
+
 query_params = st.query_params
 
 if 'session_id' in query_params:
