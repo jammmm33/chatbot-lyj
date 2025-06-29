@@ -26,6 +26,13 @@ if 'message_list' not in st.session_state:
     st.session_state.message_list = []
 
 
+# 비속어 함수
+BAD_WORDS = ["바보", "멍청이"]  
+
+def contains_bad_word(text):
+    return any(bad_word in text.lower() for bad_word in BAD_WORDS)
+
+
 # 🔶 FAQ 리스트
 faq_list = [
     "청년수당이란?",
@@ -57,17 +64,21 @@ for message in st.session_state.message_list:
 
 # 🔶 질문이 들어온 경우 처리
 if user_question:
-    with st.chat_message("user"):
-        st.write(user_question)
-    st.session_state.message_list.append({'role': 'user', 'content': user_question})
+    if contains_bad_word(user_question):
+        with st.chat_message("ai"):
+            st.error("⚠️ 부적절한 언어가 감지되어 답변할 수 없습니다.")
+    else:
+        with st.chat_message("user"):
+            st.write(user_question)
+        st.session_state.message_list.append({'role': 'user', 'content': user_question})
 
-    with st.spinner('답변을 생성하는 중입니다.'):
-        session_id = st.session_state.session_id
-        ai_message = get_ai_message(user_question, session_id=session_id)
+        with st.spinner('답변을 생성하는 중입니다.'):
+            session_id = st.session_state.session_id
+            ai_message = get_ai_message(user_question, session_id=session_id)
 
-    with st.chat_message("ai"):
-        ai_message = st.write_stream(ai_message)
-    st.session_state.message_list.append({'role': 'ai', 'content': ai_message})
+        with st.chat_message("ai"):
+            ai_message = st.write_stream(ai_message)
+        st.session_state.message_list.append({'role': 'ai', 'content': ai_message})
         
 
 st.info("청년수당에 관한 궁금한 내용을 아래 채팅창에 입력해보세요!", icon="💬")
