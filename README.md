@@ -3,6 +3,8 @@
 [![Streamlit](https://img.shields.io/badge/Streamlit-FF4B4B?style=for-the-badge&logo=streamlit&logoColor=white)](https://streamlit.io/) [![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/) [![LangChain](https://img.shields.io/badge/LangChain-0086D1?style=for-the-badge)](https://www.langchain.com/) [![OpenAI](https://img.shields.io/badge/OpenAI-412991?style=for-the-badge&logo=openai&logoColor=white)](https://openai.com/) [![Pinecone](https://img.shields.io/badge/Pinecone-0C59E8?style=for-the-badge&logo=pinecone&logoColor=white)](https://www.pinecone.io/)
 
 > 서울시 청년수당 안내문(`chungnun.docx`) 문서를 기반으로 사용자의 질문에 답변하는 RAG(검색 증강 생성) 기반의 AI 챗봇입니다. LangChain과 OpenAI, Pinecone을 활용하여 문서에 대한 자연어 질의응답 기능을 구현하고 Streamlit을 통해 웹 애플리케이션으로 배포했습니다.
+> 
+> **배포 주소:** https://chatbot-lyj-250618.streamlit.app
 
 <br>
 
